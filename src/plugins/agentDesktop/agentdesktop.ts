@@ -218,11 +218,12 @@ class AgentDesktopPlugin {
         let cwInstance = me.hostInstance;
         class customTemplateComponent {
             renderMessage(msgData: any) {
-                if ((msgData?.type === "currentUser" && msgData?.message[0]?.cInfo?.body === "") || (msgData?.type === "user_message" && msgData?.message.type === "")) {
-                    return '_ignore_message_render_';
-                } else {
-                    return false;
-                }
+                // if ((msgData?.type === "currentUser" && msgData?.message[0]?.cInfo?.body === "") || (msgData?.type === "user_message" && msgData?.message.type === "")) {
+                //     return '_ignore_message_render_';
+                // } else {
+                //     return false;
+                // }
+                return '_ignore_message_render_';
             }
         }
         cwInstance.templateManager.installTemplate(new customTemplateComponent());
