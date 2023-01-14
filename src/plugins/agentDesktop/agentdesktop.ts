@@ -111,64 +111,67 @@ class AgentDesktopPlugin {
         });
 
         // sent event style setting in user chat 
-        me.hostInstance.on('afterRenderMessage', (event: any) => {
-            if(!event.messageHtml) return false;
-            if (localStorage.getItem("kr-agent-status") != "connected") return;
+        // me.hostInstance.on('afterRenderMessage', (event: any) => {
+        //     if(!event.messageHtml) return false;
+        //     if (localStorage.getItem("kr-agent-status") != "connected") return;
 
-            if (event.msgData?.type === "currentUser") {
-                // remove bot typing while agent being connected
-                this.$('.typingIndicatorContent').css('display', 'none');
+        //     if (event.msgData?.type === "currentUser") {
+        //         // remove bot typing while agent being connected
+        //         this.$('.typingIndicatorContent').css('display', 'none');
 
-                const msg = event.msgData.message;
-                const extraInfoEle = event.messageHtml.find('.extra-info');
-                if (!extraInfoEle.children('.sentIndicator').length) {
-                    extraInfoEle.append('<div class="sentIndicator"></div>');
+        //         const msg = event.msgData.message;
+        //         const extraInfoEle = event.messageHtml.find('.extra-info');
+        //         if (!extraInfoEle.children('.sentIndicator').length) {
+        //             extraInfoEle.append('<div class="sentIndicator"></div>');
 
-                    // changing indicator text for specific message on deliver and read events
-                    me.hostInstance.bot.on('message', (message: any) => {
-                        var tempData = JSON.parse(message.data);
-                        if (!tempData) return;
-                        if (tempData.from === "bot" && tempData.type === "events" && tempData.message.clientMessageId === msg[0].clientMessageId) {
-                            var ele = this.$("#" + tempData.message.clientMessageId + " .sentIndicator");
-                            if (tempData.message.type === "message_delivered") {
-                                if (!ele.hasClass('read')) {
-                                    ele.addClass("delivered");
-                                }
-                            } else if (tempData.message.type === "message_read") {
-                                ele.removeClass("delivered").addClass("read");
-                            }
+        //             // changing indicator text for specific message on deliver and read events
+        //             me.hostInstance.bot.on('message', (message: any) => {
+        //                 var tempData = JSON.parse(message.data);
+        //                 if (!tempData) return;
+        //                 if (tempData.from === "bot" && tempData.type === "events" && tempData.message.clientMessageId === msg[0].clientMessageId) {
+        //                     var ele = this.$("#" + tempData.message.clientMessageId + " .sentIndicator");
+        //                     if (tempData.message.type === "message_delivered") {
+        //                         if (!ele.hasClass('read')) {
+        //                             ele.addClass("delivered");
+        //                         }
+        //                     } else if (tempData.message.type === "message_read") {
+        //                         console.log('marked as read',event.msgData);
+        //                         ele.removeClass("delivered").addClass("read");
+        //                     }
 
-                        }
-                        // change the indicator to read when agent switch the slot to other user
-                        else if (tempData.from === "bot" && tempData.type === "events" && tempData.message.clientMessageId === 'all') {
-                            var ele = this.$(" .sentIndicator");
-                            if (tempData.message.type === "message_read") {
-                                ele.removeClass("delivered").addClass("read");
-                            }
-                        }
-                    });
-                }
-            } else {
-                // send read event from user to agent 
-                if (event.msgData?.message[0]?.component?.payload?.template_type == 'live_agent') {
-                    const messageToBot: any = {};
-                    const msgId = event.msgData.messageId;
-                    messageToBot["event"] = "message_delivered";
-                    messageToBot["message"] = {
-                        "body": "",
-                        "type": ""
-                    }
-                    messageToBot["resourceid"] = "/bot.message";
-                    me.hostInstance.bot.sendMessage(messageToBot, (err: any) => { });
+        //                 }
+        //                 // change the indicator to read when agent switch the slot to other user
+        //                 else if (tempData.from === "bot" && tempData.type === "events" && tempData.message.clientMessageId === 'all') {
+        //                     var ele = this.$(" .sentIndicator");
+        //                     if (tempData.message.type === "message_read") {
+        //                         ele.removeClass("delivered").addClass("read");
+        //                     }
+        //                 }
+        //             });
+        //         }
+        //     } else {
+        //         // send read event from user to agent 
+        //         if (event.msgData?.message[0]?.component?.payload?.template_type == 'live_agent') {
+        //             console.log('sending read event',event.msgData);
+                    
+        //             const messageToBot: any = {};
+        //             const msgId = event.msgData.messageId;
+        //             messageToBot["event"] = "message_delivered";
+        //             messageToBot["message"] = {
+        //                 "body": "",
+        //                 "type": ""
+        //             }
+        //             messageToBot["resourceid"] = "/bot.message";
+        //             me.hostInstance.bot.sendMessage(messageToBot, (err: any) => { });
 
-                    // send read event when user being in current tab
-                    if (this.isTabActive) {
-                        messageToBot.event = 'message_read'
-                        me.hostInstance.bot.sendMessage(messageToBot, (err: any) => { });
-                    }
-                }
-            }
-        });
+        //             // send read event when user being in current tab
+        //             if (this.isTabActive) {
+        //                 messageToBot.event = 'message_read'
+        //                 me.hostInstance.bot.sendMessage(messageToBot, (err: any) => { });
+        //             }
+        //         }
+        //     }
+        // });
     }
 
     appendVideoAudioElemnts() {
