@@ -261,7 +261,7 @@ initShow  (config:any) {
     }
   } else {
     chatWindowHtml.addClass('minimize');
-    chatWindowHtml.find('.minimized-title').html(`Talk to ${me.config.chatTitle}`);
+    chatWindowHtml.find('.minimized-title').html(`Enter Co-browser Security Code`);
     me.skipedInit = true;
     if (me.config.multiPageApp && me.config.multiPageApp.enable && maintainContext) {
       setTimeout(() => {
@@ -776,11 +776,33 @@ bindEvents  () {
       me.minimized = false;
     } else {
       _chatContainer.addClass('minimize');
-      _chatContainer.find('.minimized-title').html(`Talk to ${me.config.chatTitle}`);
+      _chatContainer.find('.minimized-title').html(`Enter Co-browser Security Code`);
       me.minimized = true;
       if (me.expanded === true) {
         $('.kore-chat-overlay').hide();
       }
+    }
+  });
+
+  _chatContainer.on('click', '.minimized-title', (event: any) => {
+  const cobrowseModal = document.getElementById('minimized-cobrowse');
+  cobrowseModal.style.display = 'flex';
+  _chatContainer.find('.minimized-title').html(``);    
+  });
+
+  _chatContainer.on('keydown', '#cobrowse-input', (event: any) => {
+    let config = me.config;
+    if (event.keyCode == 13) {
+      const chatInput: any = $(event.currentTarget);
+      console.log(chatInput);
+      if (chatInput.val()) {
+        me.JWTSetup ()
+        setTimeout(() => {
+          this.checkCoBrowseOTP(chatInput.val(), config);
+
+        }, 3000);
+      }
+      event.preventDefault();
     }
   });
 
@@ -826,7 +848,7 @@ bindEvents  () {
     }
   });
   
-  _chatContainer.on('click', '.minimized,.minimized-title', (event: any) => {
+  _chatContainer.on('click', '.minimized', (event: any) => {
     if (me.config.multiPageApp && me.config.multiPageApp.enable) {
       me.setLocalStoreItem('kr-cw-state', 'open');
     }
@@ -1522,6 +1544,10 @@ getChatTemplate (tempType: string) {
      <div class="kr-wiz-menu-chat defaultTheme-kore">\
      </div>	\
          <div class="minimized-title"></div> \
+         <div id="minimized-cobrowse" class="minimized-cobrowse">\
+         <p>Co-Browser Security Code</p>\
+         <input id="cobrowse-input" type="text" placeholder="Enter Code" class="input-text">\
+         </div>\
          <div class="minimized"><span class="messages"></span></div> \
          <div class="kore-chat-header"> \
              <div id="botHeaderTitle" aria-labelledby="botHeaderTitle" class="header-title" title="${chatTitle}">${chatTitle}</div> \
@@ -1780,6 +1806,45 @@ getJWT (options: { clientId: any; clientSecret: any; userIdentity: any; JWTUrl: 
   });
 };
 
+  agentCoBrowseInfo(data: any) {
+    let me: any = this;
+    console.log(data);
+    const messageToBot:any = {};
+    messageToBot["event"] = "voice_cobrowse_req";
+    messageToBot["message"] = data  
+    bot.sendMessage(messageToBot, (err: any) => {
+      console.error('bot.closeConversationSession send failed sending');
+    });
+
+  }
+
+  checkCoBrowseOTP(otp: any, config: any) {
+    let me: any = this;
+    const jsonData = {
+      otp: otp
+    };
+
+    return $.ajax({
+      url: 'https://uat-smartassist.kore.ai/agentassist/api/v1/otp/validateOtp',
+      type: 'post',
+      data: jsonData,
+      dataType: 'json',
+      headers: {
+        'iid': config.botOptions.botInfo.taskBotId,
+        'Authorization': 'bearer ' + config.jwtGrantSuccessInformation.authorization.accessToken,
+        Accountid: config.jwtGrantSuccessInformation.userInfo.accountId
+      },
+      success(data: any) {
+        me.agentCoBrowseInfo(data);
+      },
+      error(err: any) {
+        // chatWindowInstance.showError(err.responseText);
+      },
+    });
+  }
+
+
+
 JWTSetup (){
   let me:any=this;
   me.config.botOptions.assertionFn = me.assertionFn.bind(me);
@@ -1792,6 +1857,7 @@ JWTSetup (){
 
   } 
 }
+
 setupInternalAssertionFunction (){
   const me:any = this;
   me.getJWT(me.config.botOptions).then(function(res: { jwt: any; }){

@@ -98,6 +98,9 @@
 	.minimized-title {
 		display: none;
 	}
+	.minimized-cobrowse {
+		display: none;
+	}
 	.messages {
 		background-image: var(--sdk-chat-widow-min-icon);
 		display: inline-block;
@@ -951,6 +954,21 @@
                 opacity: 1;
                 max-width: 300px;
             }
+        }
+		.minimized-cobrowse {
+			    /* width: 363px; */
+    /* height: 112px; */
+    flex-shrink: 0;
+    /* width: 363px; */
+    /* padding: 24px 12px; */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: -115px;
+    bottom: 169px;
+    left: -120px;
+    /* right: 65px; */
         }
         .minimized {
             display: block;

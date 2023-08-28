@@ -51,6 +51,7 @@ class AgentDesktopPlugin {
         let me: any = this;
         this.$ = me.hostInstance.$;
         this.appendVideoAudioElemnts();
+        // this.addCobrowse();
         document.addEventListener("visibilitychange", () => {
             if (document.visibilityState === 'visible') {
                 this.isTabActive = true
@@ -200,6 +201,13 @@ class AgentDesktopPlugin {
         chatEle.append(localVideoElement);
         chatEle.append(remoteVideoElement);
     }
+    // addCobrowse(){
+    //     let me: any = this;
+    //     let cwInstance = me.hostInstance;
+    //     let chatEle = cwInstance.chatEle;
+    //     let localVideoElement = '    <div id="cobrowse-btn" class="minimized-cobrowse">Co-browse</div>';
+    //     chatEle.append(localVideoElement);
+    // }
 
     extend(target: any, source: any) {
         let me: any = this;
